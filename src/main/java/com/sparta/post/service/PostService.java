@@ -98,6 +98,10 @@ public class PostService {
         return postRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("선택한 게시글이 없습니다.")
         );
-
+    }
+    public PostResponseDto getPostOneResponse(Long id){
+        return new PostResponseDto(postRepository.findById(id).orElseThrow(()->
+                new IllegalArgumentException("선택한 게시글이 없습니다.")
+        ));
     }
 }
