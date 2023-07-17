@@ -11,11 +11,15 @@ spring-lv4
    <img width="680" alt="image" src="https://github.com/yuio7279/spring-lv4/assets/94231335/0e5f5d22-2589-4b76-a3b8-bedc92ea8693">
 
 3. 기술 스택
-   *spring
-   *JWT
-   *spring securiy
-   *github
-   *mySQL
+   > spring
+   
+   > JWT
+   
+   > spring securiy
+   
+   > github
+   
+   > mySQL
 
 4. 요구사항 상세
    > 회원 가입 API (완료)
