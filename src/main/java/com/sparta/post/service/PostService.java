@@ -5,6 +5,7 @@ import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
+import com.sparta.post.entity.UserRoleEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.sparta.post.repository.PostRepository;
@@ -39,45 +40,64 @@ public class PostService {
         return postResponseDto;
     }
 
-    public Post getPostOne(Long id){
-        return postRepository.findById(id).orElseThrow(()->
-                new IllegalArgumentException("선택한 게시글이 없습니다.")
-        );
 
-    }
 
     public PostResponseDto deletePost(Long id, DeleteRequestDto deleteRequestDto, User user){
         Post post = getPostOne(id);
         String postUsername = post.getUserName();
-        if(!postUsername.equals(user.getUsername())){
-            throw new IllegalArgumentException("작성자 본인이 아닙니다.");
-        }
-
-        if(post.getPassword().equals(deleteRequestDto.getPassword())){
+        //관리자인경우 바로 삭제 가능
+        if(user.getRole().equals(UserRoleEnum.ADMIN)){
             postRepository.delete(post);
             PostResponseDto postResponseDto = new PostResponseDto(post);
             postResponseDto.setMsg(id+"번 글 삭제가 완료되었습니다.");
             return postResponseDto;
         }else{
-            throw new InputMismatchException("비밀번호가 올바르지 않습니다.");
+            if(!postUsername.equals(user.getUsername())){
+                throw new IllegalArgumentException("작성자 본인이 아닙니다.");
+            }
+
+            if(post.getPassword().equals(deleteRequestDto.getPassword())){
+                postRepository.delete(post);
+                PostResponseDto postResponseDto = new PostResponseDto(post);
+                postResponseDto.setMsg(id+"번 글 삭제가 완료되었습니다.");
+                return postResponseDto;
+            }else{
+                throw new InputMismatchException("비밀번호가 올바르지 않습니다.");
+            }
         }
+
     }
 
     @Transactional
     public PostResponseDto updatePost(Long id, PostRequestDto postRequestDto, User user){
         Post post = getPostOne(id);
         String postUsername = post.getUserName();
-        if(!postUsername.equals(user.getUsername())){
-            throw new IllegalArgumentException("작성자 본인이 아닙니다.");
-        }
 
-        if(post.getPassword().equals(postRequestDto.getPassword())){
-            postRequestDto.setUserName(user.getUsername());
-            post.update(postRequestDto);
+        //관리자인경우 바로 수정 가능
+        if(user.getRole().equals(UserRoleEnum.ADMIN)) {
+            post.adminUpdate(postRequestDto);
             PostResponseDto postResponseDto = new PostResponseDto(post);
             return postResponseDto;
-        }else{
-            throw new InputMismatchException("비밀번호가 올바루지 않습니다.");
+        }else {
+            if (!postUsername.equals(user.getUsername())) {
+                throw new IllegalArgumentException("작성자 본인이 아닙니다.");
+            }
+
+            if (post.getPassword().equals(postRequestDto.getPassword())) {
+                postRequestDto.setUserName(user.getUsername());
+                post.update(postRequestDto);
+                PostResponseDto postResponseDto = new PostResponseDto(post);
+                return postResponseDto;
+            } else {
+                throw new InputMismatchException("비밀번호가 올바루지 않습니다.");
+            }
         }
+    }
+
+    public Post getPostOne(Long id){
+        return postRepository.findById(id).orElseThrow(()->
+                new IllegalArgumentException("선택한 게시글이 없습니다.")
+        );
+
     }
 }

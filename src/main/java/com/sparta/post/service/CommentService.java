@@ -4,6 +4,7 @@ import com.sparta.post.dto.CommentRequestDto;
 import com.sparta.post.entity.Comment;
 import com.sparta.post.entity.Post;
 import com.sparta.post.entity.User;
+import com.sparta.post.entity.UserRoleEnum;
 import com.sparta.post.repository.CommentRepository;
 import com.sparta.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,23 +36,31 @@ public class CommentService {
         Comment foundedComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
         );
-
-        if(foundedComment.getUser().getUsername().equals(user.getUsername())){
+        if(user.getRole().equals(UserRoleEnum.ADMIN)){
             foundedComment.update(requestDto);
-        }else{
-            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
         }
+        else{
+            if(foundedComment.getUser().getUsername().equals(user.getUsername())){
+                foundedComment.update(requestDto);
+            }else{
+                throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+            }
+        }
+
     }
 
     public void deleteComment(Long commentId,User user) {
         Comment foundedComment = commentRepository.findById(commentId).orElseThrow(
                 () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
         );
-
-        if(foundedComment.getUser().getUsername().equals(user.getUsername())){
+        if(user.getRole().equals(UserRoleEnum.ADMIN)){
             commentRepository.delete(foundedComment);
-        }else{
-            throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+        }else {
+            if (foundedComment.getUser().getUsername().equals(user.getUsername())) {
+                commentRepository.delete(foundedComment);
+            } else {
+                throw new IllegalArgumentException("작성자만 삭제할 수 있습니다.");
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ public class Post extends Timestamped {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post" ,cascade = CascadeType.PERSIST, orphanRemoval = true)
     List<Comment> commentList = new ArrayList<>();
 
 
@@ -52,6 +52,11 @@ public class Post extends Timestamped {
     public void update(PostRequestDto postRequestDto) {
         this.title = postRequestDto.getTitle();
         this.userName = postRequestDto.getUserName();
+        this.content = postRequestDto.getContent();
+    }
+
+    public void adminUpdate(PostRequestDto postRequestDto) {
+        this.title = postRequestDto.getTitle();
         this.content = postRequestDto.getContent();
     }
 }
