@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity
 @Table(name = "comment")
@@ -24,6 +27,9 @@ public class Comment extends Timestamped{
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @OneToMany(mappedBy = "comment")
+    private List<CommentLikes> commentLikesList = new ArrayList<>();
 
     public Comment(CommentRequestDto requestDto) {
         this.content = requestDto.getContent();

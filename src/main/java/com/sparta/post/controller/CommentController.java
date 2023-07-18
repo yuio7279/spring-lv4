@@ -52,7 +52,15 @@ public class CommentController {
 
     }
 
+    @PostMapping("/comments/like/{id}")
+    public void likePost (@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.likeComment(id, userDetails.getUser());
+    }
 
+    @DeleteMapping("/comments/like/{id}")
+    public void deleteLikePost (@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        commentService.deleteLikeComment(id, userDetails.getUser());
+    }
 
 
 }

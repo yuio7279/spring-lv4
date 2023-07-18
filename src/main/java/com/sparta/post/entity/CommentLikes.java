@@ -22,10 +22,6 @@ public class CommentLikes{
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
-
 
     public CommentLikes(User user, Comment comment) {
         this.user = user;

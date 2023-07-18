@@ -128,7 +128,5 @@ public class PostService {
         }
         Optional<PostLikes> like = postLikesRepository.findByUserAndPost(user, post);
         postLikesRepository.delete(like.get());
-
-
     }
 }

@@ -18,7 +18,6 @@ public class PostResponseDto {
     private LocalDateTime modifiedAt;
     private String msg;
     private int postLikesCount;
-    private int commentLikesCount;
 
     private List<CommentResponseDto> commentList;
 
@@ -31,7 +30,6 @@ public class PostResponseDto {
         this.modifiedAt = post.getModifiedAt();
         this.commentList = post.getCommentList().stream().map(CommentResponseDto::new).toList();
         this.postLikesCount = post.getPostLikesList().size();
-        this.commentLikesCount = post.getCommentLikesList().size();
     }
 
     public void setMsg(String msg){
