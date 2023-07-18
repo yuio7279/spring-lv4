@@ -4,25 +4,31 @@ import com.sparta.post.dto.DeleteRequestDto;
 import com.sparta.post.dto.PostRequestDto;
 import com.sparta.post.dto.PostResponseDto;
 import com.sparta.post.entity.Post;
+import com.sparta.post.entity.PostLikes;
 import com.sparta.post.entity.User;
 import com.sparta.post.entity.UserRoleEnum;
+import com.sparta.post.repository.PostLikesRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import com.sparta.post.repository.PostRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PostService {
 
-    PostRepository postRepository;
+    private final PostRepository postRepository;
+    private final PostLikesRepository postLikesRepository;
 
-    public PostService(PostRepository postRepository) {
-        this.postRepository = postRepository;
-    }
+
 
     public List<PostResponseDto> getPosts(){
         return postRepository.findAllByOrderByModifiedAtDesc().stream().map(PostResponseDto::new).toList();
@@ -103,5 +109,26 @@ public class PostService {
         return new PostResponseDto(postRepository.findById(id).orElseThrow(()->
                 new IllegalArgumentException("선택한 게시글이 없습니다.")
         ));
+    }
+
+    public void likePost(Long id, User user) {
+        Post post = getPostOne(id);
+        if(postLikesRepository.findByUserAndPost(user, post).isPresent()){
+            throw new IllegalArgumentException("이미 좋아요를 누르셨습니다.");
+
+        }
+        PostLikes postLikes = postLikesRepository.save(new PostLikes(user, post));
+    }
+
+    public void deleteLikePost(Long id, User user){
+        Post post = getPostOne(id);
+        if(postLikesRepository.findByUserAndPost(user, post).isEmpty()){
+            throw new IllegalArgumentException("이미 삭제되었습니다.");
+
+        }
+        Optional<PostLikes> like = postLikesRepository.findByUserAndPost(user, post);
+        postLikesRepository.delete(like.get());
+
+
     }
 }

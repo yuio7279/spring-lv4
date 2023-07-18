@@ -45,4 +45,13 @@ public class PostController {
     public PostResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto postRequestDto,@AuthenticationPrincipal UserDetailsImpl userDetails){
         return postService.updatePost(id, postRequestDto, userDetails.getUser());
     }
+    @PostMapping("/posts/like/{id}")
+    public void likePost (@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+         postService.likePost(id, userDetails.getUser());
+    }
+
+    @DeleteMapping("/posts/like/{id}")
+    public void deleteLikePost (@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+         postService.deleteLikePost(id, userDetails.getUser());
+    }
 }
